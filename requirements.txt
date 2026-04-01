@@ -1,0 +1,4 @@
+# Project dependencies go here
+
+requests==2.32.3
+pytest==8.3.5

@@ -1,0 +1,5 @@
+name,access,has_access
+Kevin,granted,True
+Addie,not granted,False
+Chloe,granted,True
+Test User,not granted,False
