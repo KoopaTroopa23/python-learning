@@ -1,5 +1,6 @@
 # Import FastAPI class from the fastapi library
 from fastapi import FastAPI
+from pydantic import BaseModel    # Python library that validates data - UserAccess
 
 # Create an instance of the FastAPI app
 # This is the main application object
@@ -22,7 +23,17 @@ def get_user(name: str):
     # Return the name back in a dictionary as JSON
     return {"user": name}
 
-
-
-#  FASTAPI - is like Swagger UI
-#  Flask and Django is like Spring Boot
+# This is a model - it defines what data the POST request expects
+# It is like a blueprint for the data
+class UserAccess(BaseModel):
+    name: str
+    access: str
+@app.post("/access")
+def create_access(user: UserAccess):
+    # Check if access is granted using your ETL logic
+    has_access = user.access.strip().lower() == "granted"
+    return {
+        "name": user.name,
+        "access": user.access,
+        "has_access": has_access
+    }
