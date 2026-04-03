@@ -1,0 +1,20 @@
+stages:
+  - extract
+  - test
+  - deploy
+
+run_etl:
+  stage: extract
+  script:
+    - python app/etl/01_extract_transform_load_csv.py
+
+run_tests:
+  stage: test
+  script:
+    - pip install pytest
+    - pytest tests/ -v
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to $ENVIRONMENT"
