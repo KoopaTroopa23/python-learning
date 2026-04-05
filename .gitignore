@@ -12,3 +12,4 @@ __pycache__/
 .env.terraform/
 *.tfstate
 *.tfstate.backup
+minikube-linux-amd64
