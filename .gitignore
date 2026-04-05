@@ -9,4 +9,6 @@ __pycache__/
 .vscode/
 
 # Environment files
-.env
+.env.terraform/
+*.tfstate
+*.tfstate.backup
