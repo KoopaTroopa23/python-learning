@@ -50,6 +50,19 @@ def check_temperature (temp) :
 
 
 
+def get_letter_grade (score) :
+    if (score >= 90) :
+        return "A"
+    elif (score >= 80) :
+        return "B"
+    elif (score >= 70) :
+        return "C"
+    elif (score >= 60) :
+        return "D"
+    else :
+        return "F"
+
+
 
 
 
@@ -100,3 +113,6 @@ print(check_temperature(81))
 print(check_temperature(49))
 print(check_temperature(60))
 
+
+# get_letter_grade
+print(f"You grade is: {get_letter_grade(85)}")
