@@ -1,7 +1,7 @@
 import os
 import requests
 
-# Function - you know this
+# Function -
 def check_health(url):
     # try/except - like if/else for errors
     try:
@@ -14,13 +14,13 @@ def check_health(url):
     except:
         return "unreachable"
 
-# List - you know this
+# List - 
 environments = [
     {"name": "dev", "url": "http://localhost:8000"},
     {"name": "test", "url": "http://localhost:8001"},
 ]
 
-# Loop - you know this
+# Loop - 
 for env in environments:
     status = check_health(env["url"])
     print(f"{env['name']} is {status}")

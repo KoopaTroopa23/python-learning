@@ -23,3 +23,50 @@ def calculate_pay(h):
 
 for h in hours:
     print(f"{h} hours worked — Total pay: ${calculate_pay(h)}")
+
+
+
+
+# for - starts the loop
+# hours - variable that holds each item
+# in - membership operator - go through each item
+# names the list we looping through
+
+for hours in hours:
+    print(hours) 
+
+
+users = [
+    {"name": "Kevin", "role": "developer", "active": True},
+    {"name": "Maria", "role": "tester", "active": False},
+    {"name": "John", "role": "developer", "active": True},
+    {"name": "Ashley", "role": "manager", "active": True},
+    {"name": "Chloe", "role": "tester", "active": False}
+]
+
+def get_active_developers (users) :
+    result = []                                     # empty list to collect results
+    for user in users:                            # loop through each user
+        if  user["role"] == "developer" and user["active"] == True:
+            result.append(user)                       # add matching user to result
+    return result 
+print(get_active_developers(users))     
+
+
+
+
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+def get_even_numbers(numbers):
+    result = []
+    for number in numbers:
+        if number % 2 == 0:
+            result.append(number)
+    return result
+
+print(get_even_numbers(numbers))
+
+
+
+
+x

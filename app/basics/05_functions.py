@@ -49,6 +49,11 @@ def check_temperature (temp) :
         return "Comfortable"
 
 
+def is_passing (grade) :
+    if grade >= 60 :
+        return "Passing"
+    else :
+        return "Failing"
 
 
 
@@ -100,3 +105,8 @@ print(check_temperature(81))
 print(check_temperature(49))
 print(check_temperature(60))
 
+# is_passing
+print(is_passing(61))
+print(is_passing(73))
+print(is_passing(90))
+print(is_passing(30))
