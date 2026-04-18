@@ -14,10 +14,21 @@ create_table()
 # The "/" means this is the root endpoint - like the homepage of the API
 @app.get("/")
 def read_root():
-    # Return a dictionary - FastAPI automatically converts it to JSON
-    return {"message": "Hello from the API",
-        "fastapi_is_like": "Swagger UI",
-        "flask_and_django_are_like": "Spring Boot"}
+    return {
+        "app": "Access Control API",
+        "version": "1.0.0",
+        "status": "running",
+        "docs": "https://python-learning-fpds.onrender.com/docs",
+        "endpoints": {
+            "health": "/health",
+            "users": "/access",
+            "create_user": "POST /access"
+        }
+    }
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 # This endpoint accepts a variable in the URL called "name"
 # Example: if someone calls /user/Kevin, name will equal "Kevin"
