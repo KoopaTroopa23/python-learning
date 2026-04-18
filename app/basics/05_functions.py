@@ -55,6 +55,19 @@ def is_passing (grade) :
     else :
         return "Failing"
 
+def get_letter_grade (score) :
+    if (score >= 90) :
+        return "A"
+    elif (score >= 80) :
+        return "B"
+    elif (score >= 70) :
+        return "C"
+    elif (score >= 60) :
+        return "D"
+    else :
+        return "F"
+
+
 
 
 
@@ -105,8 +118,14 @@ print(check_temperature(81))
 print(check_temperature(49))
 print(check_temperature(60))
 
+
 # is_passing
 print(is_passing(61))
 print(is_passing(73))
 print(is_passing(90))
 print(is_passing(30))
+
+
+# get_letter_grade
+print(f"You grade is: {get_letter_grade(85)}")
+
