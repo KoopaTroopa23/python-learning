@@ -1,7 +1,8 @@
 # Import FastAPI class from the fastapi library
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel    # Python library that validates data - UserAccess
-from app.api.database import create_table, insert_user, get_all_users    # Sqlite Datebase
+from app.api.database import create_table, insert_user, get_all_users    # Sqlite Database
 
 # Create an instance of the FastAPI app
 # This is the main application object
@@ -10,22 +11,47 @@ app = FastAPI()
 # Create the database table when the app starts
 create_table()
 
-# This is a decorator - it tells FastAPI this function handles GET requests
-# The "/" means this is the root endpoint - like the homepage of the API
-@app.get("/")
+# Root endpoint - returns HTML landing page
+@app.get("/", response_class=HTMLResponse)
 def read_root():
-    return {
-        "app": "Access Control API",
-        "version": "1.0.0",
-        "status": "running",
-        "docs": "https://python-learning-fpds.onrender.com/docs",
-        "endpoints": {
-            "health": "/health",
-            "users": "/access",
-            "create_user": "POST /access"
-        }
-    }
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Access Control API</title>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 600px; margin: 80px auto; padding: 20px; background: #f5f5f5; }
+            h1 { color: #2E75B6; }
+            .status { color: green; font-weight: bold; }
+            .btn { display: inline-block; margin: 10px 5px; padding: 10px 20px; background: #2E75B6; color: white; text-decoration: none; border-radius: 5px; }
+            .btn:hover { background: #1a5a96; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+            th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+            th { background: #2E75B6; color: white; }
+        </style>
+    </head>
+    <body>
+        <h1>Access Control API</h1>
+        <p>Status: <span class="status">● Running</span></p>
+        <p>Version: 1.0.0</p>
 
+        <a class="btn" href="/docs">Swagger UI Docs</a>
+        <a class="btn" href="/access">View All Users</a>
+        <a class="btn" href="/health">Health Check</a>
+
+        <table>
+            <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+            <tr><td>GET</td><td>/</td><td>This page</td></tr>
+            <tr><td>GET</td><td>/health</td><td>Health check</td></tr>
+            <tr><td>GET</td><td>/user/{name}</td><td>Get user by name</td></tr>
+            <tr><td>POST</td><td>/access</td><td>Create user access record</td></tr>
+            <tr><td>GET</td><td>/access</td><td>Get all user records</td></tr>
+        </table>
+    </body>
+    </html>
+    """
+
+# Health check endpoint
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
@@ -35,7 +61,6 @@ def health_check():
 @app.get("/user/{name}")
 def get_user(name: str):
     # name: str means name must be a string - this is called type hinting
-    # Return the name back in a dictionary as JSON
     return {"user": name}
 
 # This is a model - it defines what data the POST request expects
@@ -43,6 +68,7 @@ def get_user(name: str):
 class UserAccess(BaseModel):
     name: str
     access: str
+
 @app.post("/access")
 def create_access(user: UserAccess):
     # Check if access is granted
