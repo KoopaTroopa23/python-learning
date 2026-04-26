@@ -92,3 +92,6 @@ def read_all_users():
         for row in rows
     ]
     return {"users": users}
+
+from mangum import Mangum
+handler = Mangum(app)
