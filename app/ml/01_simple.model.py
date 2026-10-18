@@ -2,6 +2,7 @@ import pandas as pd          # pandas library
 import numpy as np           # numpy library
 from sklearn.ensemble import RandomForestClassifier  # specific tool from sklearn
 from sklearn.model_selection import train_test_split # specific tool from sklearn
+from sklearn.metrics import accuracy_score           # measures how often the model is right
 
 # Sample access control data - connects to your ETL project
 data = {

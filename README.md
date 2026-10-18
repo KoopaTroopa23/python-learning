@@ -45,10 +45,14 @@ python-learning/
 │   │   └── database.py      # SQLite database module
 │   ├── basics/              # Python fundamentals practice
 │   ├── etl/
-│   │   └── 01_extract_transform_load_csv.py  # ETL pipeline
+│   │   ├── 01_extract_transform_load_csv.py  # ETL pipeline (Python transform)
+│   │   ├── 02_elt_sql.py                     # ELT pipeline (SQL transform)
+│   │   └── 03_etl_pandas.py                  # ETL with pandas
 │   └── intermediate/        # Intermediate Python exercises
 ├── tests/
-│   └── test_main.py         # PyTest test suite
+│   ├── test_main.py         # basic test
+│   ├── test_etl.py          # ETL transform tests
+│   └── test_api.py          # API endpoint tests
 ├── terraform/               # Infrastructure as Code
 ├── Dockerfile               # Docker configuration
 ├── Jenkinsfile              # Jenkins CI/CD pipeline
@@ -68,6 +72,7 @@ python-learning/
 | GET | `/user/{name}` | Get user by name |
 | POST | `/access` | Create user access record |
 | GET | `/access` | Get all user access records |
+| PUT | `/access/{name}?access=granted` | Change a user's access (404 if not found) |
 
 ---
 
@@ -76,6 +81,7 @@ python-learning/
 - **Language:** Python 3.11
 - **Framework:** FastAPI
 - **Database:** SQLite
+- **Data:** pandas, SQL
 - **Testing:** PyTest
 - **CI/CD:** GitLab CI/CD, Jenkins
 - **Deployment:** Render
@@ -102,10 +108,12 @@ pip install -r requirements.txt
 uvicorn app.api.main:app --reload
 
 # Run tests
-PYTHONPATH=. pytest tests/ -v
+pytest tests/ -v
 
 # Run ETL pipeline
-python app/etl/01_extract_transform_load_csv.py
+python app/etl/01_extract_transform_load_csv.py   # ETL
+python app/etl/02_elt_sql.py                      # ELT
+python app/etl/03_etl_pandas.py                   # ETL with pandas
 ```
 
 ---

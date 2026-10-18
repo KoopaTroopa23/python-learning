@@ -1,8 +1,8 @@
 # Import FastAPI class from the fastapi library
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel    # Python library that validates data - UserAccess
-from app.api.database import create_table, insert_user, get_all_users    # Sqlite Database
+from app.api.database import create_table, insert_user, get_all_users, update_user    # Sqlite Database
 
 # Create an instance of the FastAPI app
 # This is the main application object
@@ -46,6 +46,7 @@ def read_root():
             <tr><td>GET</td><td>/user/{name}</td><td>Get user by name</td></tr>
             <tr><td>POST</td><td>/access</td><td>Create user access record</td></tr>
             <tr><td>GET</td><td>/access</td><td>Get all user records</td></tr>
+            <tr><td>PUT</td><td>/access/{name}?access=...</td><td>Change a user's access</td></tr>
         </table>
     </body>
     </html>
@@ -92,6 +93,16 @@ def read_all_users():
         for row in rows
     ]
     return {"users": users}
+
+@app.put("/access/{name}")
+def update_access(name: str, access: str):
+    # Change a user's access in the database - no code edit needed
+    # Example: PUT /access/Addie?access=not granted
+    has_access = access.strip().lower() == "granted"
+    changed = update_user(name, access, int(has_access))
+    if changed == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"name": name, "access": access, "has_access": has_access}
 
 from mangum import Mangum
 handler = Mangum(app)

@@ -13,10 +13,13 @@ run_etl:
 run_tests:
   stage: test
   script:
-    - pip install pytest
-    - PYTHONPATH=. pytest tests/ -v
+    - pip install -r requirements.txt
+    - pytest tests/ -v
 
 deploy:
   stage: deploy
   script:
-    - echo "Deploying to $ENVIRONMENT"
+    # RENDER_DEPLOY_HOOK = masked CI/CD variable (Settings > CI/CD > Variables)
+    - curl -fsS -X POST "$RENDER_DEPLOY_HOOK"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        // Jenkins credential (Secret text) holding the full Render deploy hook URL
+        RENDER_DEPLOY_HOOK = credentials('render-deploy-hook')
+    }
     stages {
         stage('Extract Transform Load') {
             steps {
@@ -16,11 +20,11 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'pip install pytest --break-system-packages'
-                        sh 'PYTHONPATH=. pytest tests/ -v'
+                        sh 'pip install -r requirements.txt --break-system-packages'
+                        sh 'pytest tests/ -v'
                     } else {
-                        bat 'pip install pytest'
-                        bat 'set PYTHONPATH=. && pytest tests/ -v'
+                        bat 'pip install -r requirements.txt'
+                        bat 'pytest tests/ -v'
                     }
                 }
             }
@@ -29,9 +33,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'curl -X POST "https://api.render.com/deploy/srv-d7hp58a8qa3s73eq0mpg?key=Fm5hY33veAg"'
+                        sh 'curl -X POST "$RENDER_DEPLOY_HOOK"'
                     } else {
-                        bat 'curl -X POST "https://api.render.com/deploy/srv-d7hp58a8qa3s73eq0mpg?key=Fm5hY33veAg"'
+                        bat 'curl -X POST "%RENDER_DEPLOY_HOOK%"'
                     }
                 }
             }
