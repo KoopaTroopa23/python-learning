@@ -29,6 +29,19 @@ pipeline {
                 }
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'docker build -t python-learning:${BUILD_NUMBER} .'
+                        sh 'docker run --rm python-learning:${BUILD_NUMBER} python -c "import app.api.main; print(\'image OK\')"'
+                    } else {
+                        bat 'docker build -t python-learning:%BUILD_NUMBER% .'
+                        bat 'docker run --rm python-learning:%BUILD_NUMBER% python -c "import app.api.main; print(\'image OK\')"'
+                    }
+                }
+            }
+        }
         stage('Deploy') {
             steps {
                 script {
