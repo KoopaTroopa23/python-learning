@@ -1,4 +1,17 @@
-requests==2.32.3
-pytest==9.0.2
+# Core data engineering
+pandas==3.1.0
+numpy==2.5.4
+pyarrow==26.0.0
+SQLAlchemy==2.1.6
+
+# API / ETL
+requests==2.34.2
 fastapi==0.115.0
-uvicorn==0.30.0
+uvicorn[standard]==0.54.0
+python-dotenv==1.2.4
+
+# Notebooks (used by the Jupyter VS Code extension)
+ipykernel
+
+# Testing
+pytest==9.1.1
