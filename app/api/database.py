@@ -1,80 +1,73 @@
+import os
 import sqlite3
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
+from sqlalchemy.pool import NullPool
 
-# Connect to the database - creates the file if it doesn't exist
-def get_connection():
-    # sqlite3.connect() opens the database file
-    # if the file does not exist, Python creates it automatically
-    connection = sqlite3.connect("access_control.db")
-    # return the connection so other functions can use it
-    return connection
+
+def _build_engine():
+    # Render injects DATABASE_URL (Postgres) in production via render.yaml.
+    url = os.environ.get("DATABASE_URL")
+    if url:
+        # Render/Heroku-style URLs use the "postgres://" scheme, but
+        # SQLAlchemy needs a driver-qualified scheme.
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+psycopg://", 1)
+        elif url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+        return create_engine(url, poolclass=NullPool)
+
+    # Local dev fallback: no Postgres install required. SQLAlchemy normally
+    # resolves a relative sqlite path to an absolute one at the first
+    # connection and keeps using that, which breaks tests that chdir into a
+    # fresh tmp_path per test. A creator callable defers the real
+    # sqlite3.connect() (and its path resolution) to each actual connect.
+    return create_engine(
+        "sqlite://",
+        creator=lambda: sqlite3.connect("access_control.db"),
+        poolclass=NullPool,
+    )
+
+
+engine = _build_engine()
+metadata = MetaData()
+
+users = Table(
+    "users",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("name", String, nullable=False),
+    Column("access", String, nullable=False),
+    Column("has_access", Integer, nullable=False),
+)
+
 
 # Create the table if it doesn't exist
 def create_table():
-    # get the database connection
-    connection = get_connection()
-    # cursor is what actually runs SQL commands
-    # think of it like Postman but for databases
-    cursor = connection.cursor()
-    # execute runs the SQL command
-    # CREATE TABLE IF NOT EXISTS means only create if it doesn't already exist
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,  -- database assigns ID automatically
-            name TEXT NOT NULL,                    -- name must be a string, cannot be empty
-            access TEXT NOT NULL,                  -- access value, cannot be empty
-            has_access INTEGER NOT NULL            -- 1 = True, 0 = False in SQLite
-        )
-    """)
-    # commit saves the changes to the database permanently
-    connection.commit()
-    # close the connection when done - good practice
-    connection.close()
+    metadata.create_all(engine)
 
 
-    # Insert a new user record into the database
+# Insert a new user record into the database
 def insert_user(name, access, has_access):
-    # get the database connection
-    connection = get_connection()
-    # cursor runs the SQL command
-    cursor = connection.cursor()
-    # INSERT INTO adds a new row to the users table
-    # the ? marks are placeholders - never put values directly in SQL strings
-    # this protects against SQL injection attacks
-    cursor.execute("""
-        INSERT INTO users (name, access, has_access)
-        VALUES (?, ?, ?)
-    """, (name, access, has_access))
-    # save the changes
-    connection.commit()
-    # close the connection
-    connection.close()
+    with engine.begin() as connection:
+        connection.execute(
+            users.insert().values(name=name, access=access, has_access=has_access)
+        )
+
 
 # Get all users from the database
 def get_all_users():
-    # get the database connection
-    connection = get_connection()
-    # cursor runs the SQL command
-    cursor = connection.cursor()
-    # SELECT * means get all columns
-    # FROM users means from the users table
-    cursor.execute("SELECT * FROM users")
-    # fetchall() returns all rows as a list
-    rows = cursor.fetchall()
-    # close the connection
-    connection.close()
-    # return all the rows
-    return rows
+    with engine.connect() as connection:
+        result = connection.execute(users.select())
+        return [tuple(row) for row in result]
 
 
 # Change access for an existing user (matched by name)
 # returns the number of rows changed (0 = no such user)
 def update_user(name, access, has_access):
-    connection = get_connection()
-    cursor = connection.cursor()
-    cursor.execute("""
-        UPDATE users SET access = ?, has_access = ? WHERE name = ?
-    """, (access, has_access, name))
-    changed = cursor.rowcount
-    connection.commit()
-    connection.close()
-    return changed
+    with engine.begin() as connection:
+        result = connection.execute(
+            users.update()
+            .where(users.c.name == name)
+            .values(access=access, has_access=has_access)
+        )
+        return result.rowcount
