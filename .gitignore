@@ -4,12 +4,26 @@
 # Python cache files
 __pycache__/
 *.pyc
+.pytest_cache/
 
 # VS Code settings
 .vscode/
 
 # Environment files
-.env.terraform/
+.env
+
+# Terraform
+.terraform/
 *.tfstate
 *.tfstate.backup
+
+# Local tools / build output
 minikube-linux-amd64
+lambda-package/
+lambda.zip
+
+# SQLite journal files
+*.db-journal
+
+# Local SQLite databases (contain user data)
+*.db

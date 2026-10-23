@@ -64,3 +64,17 @@ def get_all_users():
     connection.close()
     # return all the rows
     return rows
+
+
+# Change access for an existing user (matched by name)
+# returns the number of rows changed (0 = no such user)
+def update_user(name, access, has_access):
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        UPDATE users SET access = ?, has_access = ? WHERE name = ?
+    """, (access, has_access, name))
+    changed = cursor.rowcount
+    connection.commit()
+    connection.close()
+    return changed

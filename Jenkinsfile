@@ -1,20 +1,56 @@
 pipeline {
     agent any
+    environment {
+        // Jenkins credential (Secret text) holding the full Render deploy hook URL
+        RENDER_DEPLOY_HOOK = credentials('render-deploy-hook')
+    }
     stages {
         stage('Extract Transform Load') {
             steps {
-                sh 'python3 app/etl/01_extract_transform_load_csv.py'
+                script {
+                    if (isUnix()) {
+                        sh 'python3 app/etl/01_extract_transform_load_csv.py'
+                    } else {
+                        bat 'python app/etl/01_extract_transform_load_csv.py'
+                    }
+                }
             }
         }
         stage('Run Tests') {
             steps {
-                sh 'pip install pytest'
-                sh 'PYTHONPATH=. pytest tests/ -v'
+                script {
+                    if (isUnix()) {
+                        sh 'pip install -r requirements.txt --break-system-packages'
+                        sh 'pytest tests/ -v'
+                    } else {
+                        bat 'pip install -r requirements.txt'
+                        bat 'pytest tests/ -v'
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'docker build -t python-learning:${BUILD_NUMBER} .'
+                        sh 'docker run --rm python-learning:${BUILD_NUMBER} python -c "import app.api.main; print(\'image OK\')"'
+                    } else {
+                        bat 'docker build -t python-learning:%BUILD_NUMBER% .'
+                        bat 'docker run --rm python-learning:%BUILD_NUMBER% python -c "import app.api.main; print(\'image OK\')"'
+                    }
+                }
             }
         }
         stage('Deploy') {
             steps {
-                sh 'echo Deploying to Linux environment'
+                script {
+                    if (isUnix()) {
+                        sh 'curl -X POST "$RENDER_DEPLOY_HOOK"'
+                    } else {
+                        bat 'curl -X POST "%RENDER_DEPLOY_HOOK%"'
+                    }
+                }
             }
         }
     }

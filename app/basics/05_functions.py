@@ -49,6 +49,11 @@ def check_temperature (temp) :
         return "Comfortable"
 
 
+def is_passing (grade) :
+    if grade >= 60 :
+        return "Passing"
+    else :
+        return "Failing"
 
 def get_letter_grade (score) :
     if (score >= 90) :
@@ -114,5 +119,13 @@ print(check_temperature(49))
 print(check_temperature(60))
 
 
+# is_passing
+print(is_passing(61))
+print(is_passing(73))
+print(is_passing(90))
+print(is_passing(30))
+
+
 # get_letter_grade
 print(f"You grade is: {get_letter_grade(85)}")
+

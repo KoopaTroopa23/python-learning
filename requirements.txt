@@ -9,9 +9,11 @@ requests==2.34.2
 fastapi==0.115.0
 uvicorn[standard]==0.54.0
 python-dotenv==1.2.4
+mangum
 
 # Notebooks (used by the Jupyter VS Code extension)
 ipykernel
 
 # Testing
 pytest==9.1.1
+httpx

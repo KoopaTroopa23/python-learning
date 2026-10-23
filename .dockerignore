@@ -1,0 +1,13 @@
+.git
+.venv
+.vscode
+.pytest_cache
+__pycache__
+*.pyc
+terraform
+lambda-package
+lambda.zip
+*.db
+*.db-journal
+tests
+.env
