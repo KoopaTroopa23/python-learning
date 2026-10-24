@@ -1,7 +1,13 @@
 import os
 import sqlite3
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from sqlalchemy.pool import NullPool
+
+# Render sets DATABASE_URL directly as a real environment variable in
+# production, so this is a no-op there. Locally it loads .env (gitignored)
+# so a developer can point at their own Postgres without touching code.
+load_dotenv()
 
 
 def _build_engine():
