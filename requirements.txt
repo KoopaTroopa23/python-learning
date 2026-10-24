@@ -4,6 +4,8 @@ numpy==2.4.6
 pyarrow==26.0.0
 SQLAlchemy==2.1.6
 psycopg[binary]==3.3.6
+pandera==0.34.1
+prefect==3.9.0
 
 # API / ETL
 requests==2.34.2

@@ -1,5 +1,9 @@
 import csv
+import logging
 import sqlite3
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 # ELT = Extract -> Load -> Transform
 # Raw data goes into the database FIRST, then SQL cleans it.
@@ -36,9 +40,9 @@ def main():
     load_raw(connection, rows)                   # L
     transform_in_sql(connection)                 # T
     connection.commit()
-    print("clean_access:", connection.execute("SELECT * FROM clean_access").fetchall())
+    logger.info("clean_access: %s", connection.execute("SELECT * FROM clean_access").fetchall())
     connection.close()
-    print("ELT complete")
+    logger.info("ELT complete")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,8 @@
 import csv
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 
 # EXTRACT
@@ -95,8 +99,7 @@ def main():
     # Step 3: Load cleaned rows into a new CSV file
     load(output_file, cleaned_rows)
 
-    # Print message so you know script finished
-    print("ETL complete")
+    logger.info("ETL complete: %d rows written to %s", len(cleaned_rows), output_file)
 
 
 # Only run main() if this file is executed directly

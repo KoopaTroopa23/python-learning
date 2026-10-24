@@ -23,10 +23,10 @@ A professional Python learning project demonstrating backend API development, ET
 - Automatically triggers on every push to `main`
 
 ### Jenkins
-- **Job:** `python-learning-multibranch` (Multibranch Pipeline)
-- **Jenkinsfile:** Located in project root
-- **Stages:** Extract Transform Load → Run Tests → Deploy to Render
-- Monitors all branches automatically
+- **Jenkinsfile:** Located in project root (stages: Extract Transform Load → Run Tests → Deploy)
+- Runs locally against `http://localhost:8080`; no job is configured there yet -- the
+  Jenkinsfile exists and can be pointed at a Pipeline job, but it isn't wired up
+  to auto-trigger on push (unlike GitLab CI, which is)
 
 ### Render
 - **Service:** `python-learning`
@@ -47,12 +47,17 @@ python-learning/
 │   ├── etl/
 │   │   ├── 01_extract_transform_load_csv.py  # ETL pipeline (Python transform)
 │   │   ├── 02_elt_sql.py                     # ELT pipeline (SQL transform)
-│   │   └── 03_etl_pandas.py                  # ETL with pandas
+│   │   ├── 03_etl_pandas.py                  # ETL with pandas
+│   │   ├── 04_etl_parquet.py                 # ETL to partitioned Parquet (pyarrow)
+│   │   ├── 05_data_quality.py                # Schema validation with pandera
+│   │   └── 06_pipeline_flow.py               # Orchestration with Prefect (tasks + flow, retries)
 │   └── intermediate/        # Intermediate Python exercises
 ├── tests/
 │   ├── test_main.py         # basic test
 │   ├── test_etl.py          # ETL transform tests
-│   └── test_api.py          # API endpoint tests
+│   ├── test_api.py          # API endpoint tests
+│   ├── test_parquet.py      # Parquet round-trip test
+│   └── test_data_quality.py # pandera schema validation tests
 ├── terraform/               # Infrastructure as Code
 ├── Dockerfile               # Docker configuration
 ├── Jenkinsfile              # Jenkins CI/CD pipeline
@@ -80,8 +85,11 @@ python-learning/
 
 - **Language:** Python 3.11
 - **Framework:** FastAPI
-- **Database:** SQLite
-- **Data:** pandas, SQL
+- **Database:** PostgreSQL in production (Render-managed), SQLite fallback for local dev --
+  same code path via SQLAlchemy Core (`app/api/database.py`)
+- **Data:** pandas, SQL, Parquet (pyarrow)
+- **Data quality:** pandera schema validation
+- **Orchestration:** Prefect (tasks, flow, retries)
 - **Testing:** PyTest
 - **CI/CD:** GitLab CI/CD, Jenkins
 - **Deployment:** Render
@@ -114,7 +122,13 @@ pytest tests/ -v
 python app/etl/01_extract_transform_load_csv.py   # ETL
 python app/etl/02_elt_sql.py                      # ELT
 python app/etl/03_etl_pandas.py                   # ETL with pandas
+python app/etl/04_etl_parquet.py                  # ETL to partitioned Parquet
+python app/etl/05_data_quality.py                 # Data quality validation (pandera)
+python app/etl/06_pipeline_flow.py                # Orchestrated with Prefect
 ```
+
+By default the API connects to a local SQLite file. To use Postgres instead, set
+`DATABASE_URL` (e.g. to a local or Render Postgres instance) before running.
 
 ---
 
